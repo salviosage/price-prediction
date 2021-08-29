@@ -1,38 +1,23 @@
 import { Document } from 'mongoose';
+import { IDoc } from './Common';
+import { IUser } from './User';
 
 export interface IDriver extends Document {
-  firstName: string;
-  lastName: string;
-  phoneNumber: number;
-  nationalId: number;
-  drivingLicence: string;
-  isOwner: boolean;
-  vehicleType: string;
-  plateNumber: string;
-  insuranceExpiresOn: string;
-  vehicleInsurance: string;
-  workingRegions: [
-    {
-      long: string;
-      lat: string;
-    },
+  passport:string,
+  user:IUser
+  documents: [
+    IDoc
   ];
-  availableTime: string;
-  paymentMethod: string;
-  accountNumber: number;
+  national_id: string,
+  driving_permit: string;
+  truck_plate_number: string;
+  truck_insurance: string;
+  carte_jaune: string;
+  work_phone_number: string;
+  verified:Boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-interface IPermit {
-  gender: string;
-  permitClass: string;
-  dateOfBirth: Date;
-  permitLink: string;
-  expirationDate: Date;
-}
-interface IInsurance {
-  insuranceId: string;
-  insuranceNumber: string;
-  provider: string;
-  documentLink: string;
-  expiredDate: Date;
-}
+
+

@@ -1,18 +1,18 @@
 {
-  "defaultSeverity": "error",
-  "extends": ["tslint:recommended"],
-  "jsRules": {},
-  "rules": {
-    "quotemark": [true, "single", "avoid-escape"],
-    "max-line-length": [true, 150],
-    "linebreak-style": true,
-    "newline-before-return": true,
-    "jsdoc-format": [true, "check-multiline-start"],
-    "object-literal-sort-keys": false,
-    "trailing-comma": false,
-    "member-access": [true, "no-public"],
-    "max-classes-per-file": false,
-    "return-undefined": false
-  },
-  "rulesDirectory": []
-}
+    "defaultSeverity": "error",
+    "extends": ["tslint:recommended"],
+    "jsRules": {},
+    "rules": {
+      "quotemark": [true, "single", "avoid-escape"],
+      "max-line-length": [true, 150],
+      "linebreak-style": true,
+      "newline-before-return": true,
+      "jsdoc-format": [true, "check-multiline-start"],
+      "object-literal-sort-keys": false,
+      "trailing-comma": false,
+      "member-access": [true, "no-public"],
+      "max-classes-per-file": false,
+      "return-undefined": false
+    },
+    "rulesDirectory": []
+  }

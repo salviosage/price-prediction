@@ -1,4 +1,5 @@
-import { graphql } from 'graphql';
+
+
 import { buildSchema } from 'type-graphql';
 import {customAuthChecker} from './auth.checker'
 interface IOptions {
@@ -8,28 +9,16 @@ interface IOptions {
 export const createSchema = async () => {
   try {
     return await buildSchema({
-      resolvers: [__dirname + '/../modules/**/*.resolver.ts'],
+      resolvers: [__dirname + '/../resolvers/*.resolver.{ts,js}'],
       emitSchemaFile: true,
+      nullableByDefault: false,
       authChecker: customAuthChecker,
       // authMode: "null",
       
     });
   } catch (error) {
-    console.log('error', error);
+    console.log(error)
+    console.log('error', error.message);
   }
 };
 
-// export const graphQLTestSchema = async ({
-//   source,
-//   variableValues,
-// }: IOptions) => {
-//   try {
-//     return graphql({
-//       schema: await createSchema(),
-//       source,
-//       variableValues,
-//     });
-//   } catch (error) {
-//     console.log('error', error);
-//   }
-// };

@@ -1,36 +1,46 @@
 import {AuthChecker} from 'type-graphql'
-import {UserModel} from '../modules/graphql/schemas/users/users.schema'
+import UserModel from '../database/models/User'
+import  DriverModel from '../database/models/Driver'
 export const customAuthChecker: AuthChecker<any> = async(
     { root, args, context, info },
     roles,
   ) => {
       const {user} =context
          if(user){
-           const{userType,email}=user||null
+           const{userType,email,phoneNumber}=user||null
            const foundUser=await UserModel.find({email})
          
-           if (foundUser.length==0){
-             return false 
-           }
-        let isUserAllowed = null;
+        
+
+           if(foundUser.length!=0){
+            let isUserAllowed = null;
       
 
-        if (roles.length==0 && userType){
-      
-          isUserAllowed= true
-        }
-        if (Array.isArray(roles) && roles.length) {
-    
-          isUserAllowed = roles.some(role => role === userType);
-        } else if(roles.length) {
+            if (roles.length==0 && userType){
           
-          isUserAllowed = userType === roles;
-        }
-          if (isUserAllowed ){
-            return true 
-          }
-          
-         return false  
+              isUserAllowed= true
+            }
+            if (Array.isArray(roles) && roles.length) {
+        
+              isUserAllowed = roles.some(role => role === userType);
+            } else if(roles.length) {
+              
+              isUserAllowed = userType === roles;
+            }
+              if (isUserAllowed ){
+                return true 
+              }
+              
+             
+           }else{
+            const foundDriver=await DriverModel.find({phoneNumber})
+            if (foundDriver.length!=0){
+              return true
+            }
+
+           }
+           return false 
+         
        }
 
     // here we can read the user from context

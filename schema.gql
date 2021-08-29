@@ -3,43 +3,50 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-enum AuthType {
-  phone
-  email
+type Client {
+  id: ID!
+  user: User!
+  shipment_orders: [ShipmentOrder!]
+  contact_persons: [OContact!]
+  documents: [ODocument!]
+  verified: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-enum CarTypeEn {
-  Fuso
-  Lifan
-  Daihatsu
-  Trailer
-  Pickups
-  Motorcycle
+type ClientLogin {
+  client: Client!
+  token: String!
 }
 
-type CreaateDriverResponse {
+type ClientSignup {
   message: String!
 }
 
-type CreaateShipmentResponse {
-  shipment: Shipment!
+type ClientsPayload {
+  clients: [Client!]!
+  count: Float!
+}
+
+input ClientUpdateInput {
+  userInfo: UserUpdateInput
+  contact_persons: [IContact!]
+  documents: [IDocument!]
+  verified: Boolean
+}
+
+type CreatedepartmentReturn {
+  department: Department!
   message: String!
 }
 
-type CreateDriverResponse {
+type CreatePositionReturn {
+  position: Position!
   message: String!
 }
 
-input CreateNoteInput {
-  title: String!
-  type: String!
-  to: NoteToType = REMINDER
-  avatar: String
-  description: String
-}
-
-type CreateNoteResponse {
-  note: Note!
+type CreateRoleReturn {
+  role: Role!
   message: String!
 }
 
@@ -48,31 +55,96 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
-enum DealStatus {
-  INITIATED
-  PROGRESSED
-  CREATED
+type Department {
+  id: ID!
+  title: String!
+  description: String
+  assignedEmployees: [User!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-"""Driver Model"""
+type DepartmentsPayload {
+  departments: [Department!]
+  count: Float!
+}
+
 type Driver {
-  _id: String!
+  id: ID!
+  passport: String
+  national_id: String
   user: User!
-  nationalId: String!
-  vehicleType: String!
-  drivingLicense: String!
-  isOwner: Boolean!
-  plateNumber: String!
-  insuranceExpiresOn: DateTime!
-  availableTime: String!
-  paymentMethod: String!
-  accountNumber: String!
-  workingRegions: [OLocation!]!
+  documents: [ODocument!]
+  work_phone_number: String
+  verified: Boolean
+  driving_permit: String
+  truck_insurance: String
+  truck_plate_number: String
+  carte_jaune: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
-type DriversResponse {
-  drivers: [Driver!]
-  count: Float
+type DriverLogin {
+  driver: Driver!
+  token: String!
+}
+
+type DriversPayload {
+  drivers: [Driver!]!
+  count: Float!
+}
+
+type DriverWithMessage {
+  driver: Driver!
+  message: String!
+}
+
+type Employee {
+  id: ID!
+  user: User!
+  position: String!
+  start_date: DateTime
+  end_date: DateTime
+  department: String!
+  work_email: String
+  work_phone_number: String
+  t_shirt_size: String
+  passport: String
+  national_id: String
+  status: String
+  documents: [ODocument!]
+  address: [ORegion!]
+  verified: Boolean
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type EmployeeLogin {
+  user: Employee!
+  token: String!
+}
+
+type EmployeesPayload {
+  users: [User!]!
+  count: Float!
+}
+
+input EmployeeUpdateArgs {
+  userInfo: UserUpdateInput
+  position: String
+  start_date: DateTime
+  end_date: DateTime
+  department: String
+  work_email: String
+  work_phone_number: String
+  t_shirt_size: String
+  passport: String
+  national_id: String
+  status: String
+  documents: [IDocument!]
+  address: [IRegion!]
+  verified: Boolean
 }
 
 type estimatePriceReturn {
@@ -94,66 +166,98 @@ type Formula {
   averageTrips: Float!
 }
 
-"""The location inputType"""
-input ILocation {
-  region: String
-  lat: String
-  long: String
-  street: String
+input IADriver {
+  driver: String!
+  price: Float!
 }
 
-type LoginPayload {
-  user: User!
-  token: String!
+input IContact {
+  phoneNumber: String
+  email: String
+  names: String
+  description: String
+}
+
+input IDocument {
+  documentId: String
+  url: String
+  type: String
+  verified: Boolean
+}
+
+input IRegion {
+  type: String
+  coordinates: [Float!]
+  locationName: String
+}
+
+input ITruck {
+  type: String
+  count: Float
 }
 
 type Mutation {
   calculate(depreciationName: String!, distance: String!): TotalPrice
   calculateFare(depreciationName: String!, distance: String!): TotalPrice
+  signUpClient(userInfo: UserInput!, contact_persons: [IContact!], documents: [IDocument!]): ClientSignup
+  updateClient(id: String!, updates: ClientUpdateInput!): Client
+  DeleteClient(_id: String!): String
+  createDepartment(title: String!, description: String): CreatedepartmentReturn
+  updateDepartment(id: String!, updates: UpdateDepartmentInput!): CreatedepartmentReturn
+  DeleteDepartment(_id: String!): String
+  signUpDriver(userInfo: UserInput!, passport: String, national_id: String, documents: [IDocument!], work_phone_number: String, driving_permit: String, truck_insurance: String, truck_plate_number: String, carte_jaune: String): UserSignup
+  updateDriver(id: String!, updates: UpdateRoleInput!): CreateRoleReturn
   DeleteDriver(_id: String!): String
-  updateDriver(userId: String!, updates: UpdateUserTypes!): User
-  CreateDriver(user: String!, nationalId: String!, vehicleInsurance: String!, vehicleType: String!, drivingLicense: String!, isOwner: Boolean!, plateNumber: String!, insuranceExpiresOn: DateTime, availableTime: String, paymentMethod: String, accountNumber: String, workingRegions: [ILocation!]): CreateDriverResponse
+  signUpEmployee(userInfo: UserInput!, position: String!, start_date: DateTime, end_date: DateTime, department: String!, work_email: String!, work_phone_number: String!, t_shirt_size: String, passport: String, national_id: String, status: String, documents: [IDocument!], address: [IRegion!], verified: Boolean): UserSignup
+  updateEmpoyee(id: String!, updates: EmployeeUpdateArgs!): Employee
   placeAnOrder(names: String!, phoneNumber: String!, weightRange: String!, packageDescription: String!, pickupLocation: String!, destination: String!, paymentMethod: String!): orderResponse
-  DeleteNote(_id: String!): String
-  CreateNote(refId: String, inputs: CreateNoteInput!): CreateNoteResponse
-  updateNote(noteId: String!, updates: UpdateNoteInput!): CreateNoteResponse
-  DeleteShipment(_id: String!): String
-  CreateShipment(title: String!, orderId: ID!): CreaateShipmentResponse
-  updateShipment(shipmentId: String!, updates: UpdateShipmentInput!): CreaateShipmentResponse
-  DeleteTruckOrder(_id: String!): String
-  createTruckOrder(from: ILocation!, to: ILocation!, phoneNumber: Float!, clientName: String!, vehicleType: CarTypeEn, goodsDetails: String, weightRange: WeightRangeType, paymentMethod: PaymentMethodEn, timeToDeliver: DateTime): TruckOrderResponse
-  updateTruckOrder(truckOrderId: String!, updates: updateTruckOrderInput!): TruckOrderResponse
+  createShipmentNote(shipmentId: String!, noteData: NoteInput!): Note
+  NoteUpdate(noteId: String!, updates: UpdateNoteInput!): Note
+  deleteNote(_id: String!): String
+  createPosition(title: String!, description: String, department: String): CreatePositionReturn
+  updatePosition(id: String!, updates: UpdatePositionInput!): CreatePositionReturn
+  DeletePosition(_id: String!): String
+  createRealTimeDriver(liveLocation: IRegion!): String
+  RealTimeDriverUpdate(liveLocation: IRegion): String
+  DeleteRealTimeDriver(_id: String!): String
+  createRole(title: String!, description: String!, privilegeLevel: Float = 10): CreateRoleReturn
+  DeleteRole(_id: String!): String
+  createShipment(title: String!, status: String = "Created", shipmentOrderId: String, assignedDrivers: [String!]): Shipment
+  updateShipment(id: String!, updates: UpdateShipmentInput!): Shipment
+  AssigndriverToShipment(shipmentId: String!, driverId: String!): Shipment
+  deleteShipment(_id: String!): String
+  createShipmentOrder(from: IRegion!, to: IRegion!, contact: IContact!, destinationContact: IContact, goodsDetails: String!, trucksRequested: [ITruck!]!, timeToDeliver: DateTime!): ShipmentOrder
+  updateShipmentOrder(id: String!, updates: UpdateShipmentOrderInput!): ShipmentOrder
+  deleteShipmentOrder(_id: String!): String
+  signUpUser(userInfo: UserInput!): UserSignup
+  updateUser(id: String!, updates: UserUpdateInput!): User
   DeleteUser(_id: String!): String
-  DeleteMe: String
-  signup(password: String, firstName: String, email: String, lastName: String, phoneNumber: Float, userType: Roles = NORMAL_USER): String
-  signinWithPhone(phone: Float!): LoginPayload
-  signin(email: String!, password: String!): LoginPayload
-  requestPasswordReset(authtype: AuthType = email, email: String, phone: Float): String
-  resetPassword(token: String!, password: String!): LoginPayload
+  resetPassword(password: String!, passwordResetToken: String!): User
+  addVehicle(paymentMethod: String!, accountNumber: Float, ownerContact: [IContact!], insurance: String, verified: Boolean!, phoneNumber: Float!, plateNumber: String!, vehicleType: String!, insuranceExpiresOn: DateTime): Vehicle
+  updateVehicle(id: String!, updates: UpdateVehicleInput!): Vehicle
+  DeleteVehicle(_id: String!): String
 }
 
-"""The Note model"""
 type Note {
-  _id: ID!
+  id: ID!
   title: String!
+  type: NoteType!
   description: String!
-  avatar: String!
-  to: NoteToType
-  type: String!
+  coverImage: String
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
-type NotesResponse {
-  notes: [Note!]!
-  count: Float!
+input NoteInput {
+  title: String!
+  type: String = "DefaultNote"
+  description: String!
+  coverImage: String
 }
 
-enum NoteToType {
-  TRUCK_ORDER
-  SHIPMENT
-  PROSPECT
-  REMINDER
+type NotesPayload {
+  notes: [Note!]!
+  count: Float!
 }
 
 enum NoteType {
@@ -170,12 +274,23 @@ type notification {
   message: String!
 }
 
-"""The location interface"""
-type OLocation {
-  region: String!
-  lat: String!
-  long: String!
-  street: String
+type OADriver {
+  driver: Driver
+  price: Float
+}
+
+type OContact {
+  phoneNumber: String
+  email: String
+  names: String
+  description: String
+}
+
+type ODocument {
+  documentId: String!
+  url: String
+  type: String
+  verified: Boolean
 }
 
 type orderResponse {
@@ -183,58 +298,134 @@ type orderResponse {
   message: String!
 }
 
-enum PaymentMethodEn {
-  MobileMoney
-  Bank
-  Cash
-  Card
+type ORegion {
+  type: String!
+  coordinates: [Float!]!
+  locationName: String
 }
 
-type Query {
-  GetDrivers(skip: Float = 0, take: Float = 25): DriversResponse
-  GetOneDriver(_id: String!): Driver
-  notifyOperations(names: String!, phoneNumber: String!, weightRange: String!, packageDescription: String!, pickupLocation: String!, destination: String!, paymentMethod: String!): notification
-  estimatePrice(from: String!, to: String!, distance: String!): estimatePriceReturn
-  GetNotes(skip: Float = 0, take: Float = 25): NotesResponse
-  GetOneNote(_id: String!): Note
-  GetShipments(skip: Float = 0, take: Float = 25): ShipmentsResponse
-  GetOneShipment(_id: String!): Shipment
-  GetTruckOrders(skip: Float = 0, take: Float = 25): TruckOrdersResponse
-  GetOneTruckOrder(_id: String!): TruckOrder
-  GetUsers(skip: Float = 0, take: Float = 25): UsersPayload
-  GetOneUser(_id: String!): User
+type OTruck {
+  type: String
+  count: Float
 }
 
-enum Roles {
-  DRIVER
-  ADMIN
-  NORMAL_USER
-  CLIENT
-  OPERATOR
-  MANAGER
-}
-
-"""The Shipment model"""
-type Shipment {
-  _id: ID!
-  user_id: String!
+type Position {
+  id: ID!
   title: String!
-  status: String!
-  orderId: TruckOrder!
-  assignedDrivers: Driver!
-  notes: Note!
+  description: String
+  assignedEmployees: [User!]
+  department: Department
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
-type ShipmentsResponse {
+type PositionsPayload {
+  positionss: [Position!]
+  count: Float!
+}
+
+type Query {
+  GetClients(skip: Float = 0, take: Float = 25): ClientsPayload
+  GetOneCleint(_id: String!): Client
+  signInClientWithPhone(phone_number: String!, password: String!): ClientLogin
+  signInClient(email: String!, password: String!): ClientLogin
+  GetDepartments(skip: Float = 0, take: Float = 25): DepartmentsPayload
+  GetOneDepartment(_id: String!): Department
+  GetAuthDriver: Driver
+  GetDrivers(skip: Float = 0, take: Float = 25): DriversPayload
+  GetOneDriver(_id: String!): Driver
+  signInDriver(email: String!, password: String!): DriverLogin
+  signInWPDriver(phone_number: String!, password: String!): DriverLogin
+  notifyOperations(names: String!, phoneNumber: String!, weightRange: String!, packageDescription: String!, pickupLocation: String!, destination: String!, paymentMethod: String!): notification
+  GetEmployees(skip: Float = 0, take: Float = 25): EmployeesPayload
+  GetOneEmployee(_id: String!): Employee!
+  signInEmployee(email: String!, password: String!): EmployeeLogin
+  estimatePrice(from: String!, to: String!, distance: String!): estimatePriceReturn
+  getNotes(skip: Float = 0, take: Float = 25): NotesPayload
+  getOneNote(_id: String!): Note
+  GetPositions(skip: Float = 0, take: Float = 25): PositionsPayload
+  GetOnePosition(_id: String!): Position
+  GetRealTimeDriver(skip: Float = 0, take: Float = 25): RealTimeDriversPayload
+  GetRealTimeDrivers(_id: String!): RealTimeDrivers
+  GetRoles(skip: Float = 0, take: Float = 25): RolesPayload
+  GetOneRole(_id: String!): Role
+  getShipments(skip: Float = 0, take: Float = 25): ShipmentsPayload
+  getOneShipment(_id: String!): Shipment
+  getShipmentOrders(skip: Float = 0, take: Float = 25): ShipmentOrdersPayload
+  getOneShipmentOrder(_id: String!): ShipmentOrder
+  GetUsers(skip: Float = 0, take: Float = 25): UsersPayload
+  GetOneUser(_id: String!): User
+  signinWithPhone(phone_number: String!, password: String!): UserLogin
+  signInUser(email: String!, password: String!): UserLogin
+  GetVehicles(skip: Float = 0, take: Float = 25): VehiclesPayload
+  GetOneVehicle(_id: String!): Vehicle
+}
+
+type RealTimeDrivers {
+  id: ID!
+  driver: Driver
+  isOnline: Boolean!
+  liveLocation: ORegion
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RealTimeDriversPayload {
+  drivers: [RealTimeDrivers!]!
+  count: Float!
+}
+
+type Role {
+  id: ID!
+  title: String!
+  description: String!
+  privilegeLevel: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type RolesPayload {
+  roles: [Role!]!
+  count: Float!
+}
+
+type Shipment {
+  id: ID!
+  title: String!
+  status: String!
+  shipmentOrder: ShipmentOrder
+  assignedDrivers: [Driver!]
+  notes: [Note!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ShipmentOrder {
+  id: ID!
+  from: ORegion!
+  to: ORegion!
+  contact: OContact!
+  destinationContact: OContact
+  goodsDetails: String
+  trucksRequested: [OTruck!]
+  assignedDrivers: [OADriver!]
+  timeToDeliver: DateTime!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ShipmentOrdersPayload {
+  shipmentOrders: [ShipmentOrder!]!
+  count: Float!
+}
+
+type ShipmentsPayload {
   shipments: [Shipment!]!
   count: Float!
 }
 
-type SignupPayload {
-  user: User!
-  message: String!
+type Subscription {
+  realTimeDriversub: RealTimeDriversPayload!
 }
 
 type TotalPrice {
@@ -242,97 +433,93 @@ type TotalPrice {
   driverPrice: String!
 }
 
-"""The truck order  model"""
-type TruckOrder {
-  _id: String!
-  from: OLocation!
-  to: OLocation!
-  phoneNumber: Float!
-  clientName: String!
-  vehicleType: String!
-  goodsDetails: String!
-  weightRange: String!
-  paymentMethod: String!
-  notes: Note!
-  timeToDeliver: DateTime!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type TruckOrderResponse {
-  TruckOrder: TruckOrder!
-  message: String!
-}
-
-type TruckOrdersResponse {
-  TruckOrders: [TruckOrder!]!
-  count: Float!
-}
-
-input UpdateDriverArgs {
-  nationalId: String
-  vehicleInsurance: String
-  vehicleType: String
-  drivingLicense: String
-  isOwner: Boolean
-  plateNumber: String
-  insuranceExpiresOn: DateTime
-  availableTime: String
-  paymentMethod: String
-  accountNumber: String
-  workingRegions: [ILocation!]
+input UpdateDepartmentInput {
+  title: String
+  description: String
 }
 
 input UpdateNoteInput {
   title: String
-  type: NoteType
-  to: NoteToType
-  avatar: String
+  type: String
   description: String
+  coverImage: String
+}
+
+input UpdatePositionInput {
+  title: String
+  description: String
+  department: String
+}
+
+input UpdateRoleInput {
+  title: String
+  description: String
+  privilegeLevel: Float
 }
 
 input UpdateShipmentInput {
   title: String
-  status: DealStatus
+  status: String
+  shipmentOrderId: String
+  assignedDrivers: [String!]
 }
 
-input updateTruckOrderInput {
-  from: ILocation!
-  to: ILocation!
-  phoneNumber: Float
-  clientName: String
-  vehicleType: CarTypeEn
+input UpdateShipmentOrderInput {
+  from: IRegion
+  to: IRegion
+  contact: IContact
+  destinationContact: IContact
   goodsDetails: String
-  weightRange: WeightRangeType
-  paymentMethod: PaymentMethodEn
+  trucksRequested: [ITruck!]!
+  weightRange: String
   timeToDeliver: DateTime
 }
 
-input UpdateUserTypes {
-  firstName: String
-  email: String
-  lastName: String
+input UpdateVehicleInput {
+  paymentMethod: String
+  accountNumber: Float
+  ownerContact: [IContact!]
+  insurance: String
+  verified: Boolean
   phoneNumber: Float
-  userType: Roles
+  plateNumber: String
+  vehicleType: String
+  insuranceExpiresOn: DateTime
 }
 
 type User {
-  _id: String!
-  firstName: String!
-  lastName: String!
+  id: ID!
+  first_name: String!
+  other_names: String!
   email: String!
-  phoneNumber: Float!
-  userType: String!
-  verified: Boolean!
-  approved: Boolean!
-  is_online: Boolean!
-  isActive: Boolean!
-  passwordResetToken: String!
-  passwordResetTokenExpiry: DateTime!
-  avatarPublicId: String!
-  avatar: String!
+  phone_number: String!
+  email_verified: Boolean!
+  phone_number_verified: Boolean!
+  user_type: String!
+  account_status: String!
+  avatar: String
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+input UserInput {
+  first_name: String!
+  other_names: String!
+  email: String!
+  phone_number: String!
+  user_type: String
+  account_status: String
+  avatar: String
+  password: String!
+}
+
+type UserLogin {
+  user: User!
+  token: String!
+}
+
+type UserSignup {
+  message: String!
 }
 
 type UsersPayload {
@@ -340,14 +527,41 @@ type UsersPayload {
   count: Float!
 }
 
-enum WeightRangeType {
-  _0_25_kg
-  _26_50_kg
-  _51_100_kg
-  _101_300_kg
-  _301_500_kg
-  _501_kg_1_ton
-  _1_ton_5_ton
-  _5_ton_10_ton
-  _10_ton_obove
+input UserUpdateInput {
+  first_name: String
+  other_names: String
+  phone_number: String
+  user_type: String
+  avatar: String
+  account_status: String
+}
+
+type Vehicle {
+  id: ID!
+  paymentMethod: String!
+  accountNumber: Float
+  ownerContact: [OContact!]
+  insurance: String
+  verified: Boolean!
+  phoneNumber: Float!
+  plateNumber: String!
+  vehicleType: String!
+  insuranceExpiresOn: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type VehiclesPayload {
+  vehicles: [Vehicle!]!
+  count: Float!
+}
+
+type WorkInfo {
+  position: String!
+  startingDate: DateTime
+  endingDate: DateTime
+  department: String!
+  workEmail: String
+  workPhone: String
+  shirtSize: String
 }

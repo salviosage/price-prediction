@@ -1,12 +1,17 @@
 import { Document } from 'mongoose';
+import {IDriver} from './Driver'
+import {INote} from './Note'
+import {IShipmentOrder} from './ShipmentOrder'
 
 export interface IShipment extends Document {
-  from: { region: String , long: String , lat:String  };
-  to: { region:String , long: String , lat:  String  };
-  packageDetails: string;
-  phoneNumber: number;
-  clientName: string;
-  weight: number;
-  timeToDeliver: Date;
-  
+    title:String
+    assignedDrivers: [IDriver],
+    notes:[INote]
+    status:String,
+    shipmentOrder:IShipmentOrder,
+    createdAt: Date;
+    updatedAt: Date;
 }
+
+
+
