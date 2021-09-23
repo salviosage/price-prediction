@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcrypt';
-import { UserEntity } from 'src/users/users.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersRepository } from 'src/users/users.repository';
 import { Repository } from 'typeorm';
-import { PasswordEntity } from './passwords.entity';
-import { SessionsEntity } from './sessions.entity';
+import { PasswordEntity } from './entities/passwords.entity';
+import { SessionsEntity } from './entities/sessions.entity';
 
 @Injectable()
 export class AuthService {

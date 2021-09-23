@@ -1,49 +1,22 @@
 import { NestFactory } from '@nestjs/core';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-// import { Transport } from '@nestjs/microservices';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import compression from 'fastify-compress';
-
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter(),
-  );
-  // const app = await NestFactory.createMicroservice<NestFastifyApplication>(
-  //   AppModule,
-  //   new FastifyAdapter(),
-  //   {
-  //     transport: Transport.KAFKA,
-  //     options: {
-  //       client: {
-  //         brokers: ['localhost:9092'],
-  //       },
-  //     },
-  //   },
-  // );
-
+  const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('Quick test API')
-    .setDescription('API for budgeting')
+    .setTitle('SMART LOGISTICS PRICING MODEL SAAS')
+    .setDescription('ASMART LOGISTICS PRICING MODEL SAAS enable small holder farmers, small businesses ,e-commerce and vendors transporting their products seamlessly, affordably and conveniently. by helping them in pricing processs whereby this machine learning model help them predict price of moving goods from one place to another. this model is able to learn from previous pricing, feedback and market research to serve better for future request')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',
       bearerFormat: 'Token',
     })
     .setVersion('1.0')
-    .addTag('budget')
+    .addTag('SMART LOGISTIC SAAS API')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.register(compression, {
-    encodings: ['gzip'],
-  });
-
-  await app.listen(4000);
+  await app.listen(3000);
 }
 bootstrap();

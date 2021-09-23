@@ -13,22 +13,23 @@ import {
 } from '@nestjs/swagger';
 import { User } from 'src/auth/auth.decorator';
 import { RequiredAuthGuard } from 'src/auth/auth.guard';
-import { UserEntity } from './users.entity';
+import { UserEntity } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 class UserCreateRequestBody {
   @ApiProperty() username: string;
+  @ApiProperty() email: string;
   @ApiProperty() password: string;
-  @ApiPropertyOptional() name?: string;
-  @ApiPropertyOptional() avatar?: string;
-  @ApiPropertyOptional() bio?: string;
+  @ApiProperty() firstName?: string;
+  @ApiProperty() lastName?: string;
+
 }
 
 class UserUpdateRequestBody {
   @ApiPropertyOptional() password?: string;
-  @ApiPropertyOptional() name?: string;
-  @ApiPropertyOptional() avatar?: string;
-  @ApiPropertyOptional() bio?: string;
+  @ApiPropertyOptional() username?: string;
+  @ApiPropertyOptional() firstName?: string;
+  @ApiPropertyOptional() lastName?: string;
 }
 
 @ApiTags('users')

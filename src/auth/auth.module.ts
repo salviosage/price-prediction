@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersRepository } from 'src/users/users.repository';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { PasswordEntity } from './passwords.entity';
-import { SessionsEntity } from './sessions.entity';
+import { PasswordEntity } from './entities/passwords.entity';
+import { SessionsEntity } from './entities/sessions.entity';
 
 @Global()
 @Module({
