@@ -59,7 +59,7 @@ export class FeedbacksService {
   ): Promise<FeedbackEntity> {
     if (!feedback.title || !feedback.satisfied || !feedback.description) {
       throw new BadRequestException(
-        'Feedback should have a title ,date it will accur and description',
+        'Feedback should have a title ,satisfaction and description',
       );
     }
 

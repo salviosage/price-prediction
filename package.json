@@ -29,6 +29,7 @@
     "@nestjs/typeorm": "^8.0.2",
     "@types/numeral": "^2.0.2",
     "bcrypt": "^5.0.1",
+    "geocoder-geonames": "^0.1.2",
     "numeral": "^2.0.6",
     "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",

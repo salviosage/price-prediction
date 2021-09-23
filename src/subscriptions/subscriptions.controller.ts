@@ -21,17 +21,16 @@ import { SubscriptionEntity } from './entities/subscriptions.entity';
 import { SubscriptionsService } from './subscriptions.service';
 
 class SubscriptionCreateRequestBody {
-  @ApiProperty() name: string;
-  @ApiPropertyOptional() flier: string;
-  @ApiProperty() description: string;
-  @ApiProperty() heldOn: Date;
+  @ApiProperty()amount: number;
+  @ApiPropertyOptional() description: string;
+  @ApiProperty() upTo: Date;
 }
 
 class SubscriptionDetailsQueryParams {
-  @ApiPropertyOptional() authorId: string;
-  @ApiPropertyOptional() toDate: Date;
-  @ApiPropertyOptional() fromDate: Date;
-  @ApiPropertyOptional() hashtags: string[];
+  // @ApiPropertyOptional() authorId: string;
+  // @ApiPropertyOptional() toDate: Date;
+  // @ApiPropertyOptional() fromDate: Date;
+  // @ApiPropertyOptional() hashtags: string[];
 }
 
 @ApiTags('subscriptions')
@@ -44,10 +43,10 @@ export class SubscriptionsController {
     @Query() query: SubscriptionDetailsQueryParams,
   ): Promise<SubscriptionEntity[]> {
     return await this.subscriptionsService.getAllSubscriptions(
-      query.authorId,
-      query.toDate,
-      query.fromDate,
-      query.hashtags,
+      // query.authorId,
+      // query.toDate,
+      // query.fromDate,
+      // query.hashtags,
     );
   }
 
@@ -62,10 +61,10 @@ export class SubscriptionsController {
   @UseGuards(RequiredAuthGuard)
   @Post('/')
   async createNewSubscription(
-    @User() author: UserEntity,
+    @User() client: UserEntity,
     @Body() subscription: SubscriptionCreateRequestBody,
   ): Promise<SubscriptionEntity> {
-    const createdSubscription = await this.subscriptionsService.createSubscription(subscription, author);
+    const createdSubscription = await this.subscriptionsService.createSubscription(subscription, client);
     return createdSubscription;
   }
 

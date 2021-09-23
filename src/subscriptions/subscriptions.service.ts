@@ -15,18 +15,18 @@ export class SubscriptionsService {
    * @description find all subscriptions
    */
   async getAllSubscriptions(
-    subscriber?: string,
-    toDate?: Date,
-    fromDate?: Date,
-    tags?: string[],
+    // subscriber?: string,
+    // toDate?: Date,
+    // fromDate?: Date,
+    // tags?: string[],
   ): Promise<Array<SubscriptionEntity>> {
     const queryBuilder = this.subscriptionsRepository
       .createQueryBuilder('subscriptions')
       .leftJoinAndSelect('subscriptions.subscriber', 'subscriber');
 
-    if (subscriber) {
-      queryBuilder.where(`subscriptions.subscriber = :subscriber`, { subscriber });
-    }
+    // if (subscriber) {
+    //   queryBuilder.where(`subscriptions.subscriber = :subscriber`, { subscriber });
+    // }
  
 
     return queryBuilder

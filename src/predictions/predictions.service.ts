@@ -8,6 +8,10 @@ import { PredictionEntity } from './entities/prediction.entity';
 import { PredictionsRepository } from './predictions.repository';
 import { Depreciation as vehicles } from './utils/data';
 import priceCalculator from './utils/formula';
+var GeocoderGeonames = require('geocoder-geonames'),
+    geocoder = new GeocoderGeonames({
+      username:'salviosage',
+    });
 
 @Injectable()
 export class PredictionsService {
@@ -64,6 +68,15 @@ export class PredictionsService {
         'Prediction request should have adistance ,arigin location and destination location',
       );
     }
+    // geocoder.get(`search`,{
+    //   q: 'Berlin'
+    // })
+    // .then(function(response){
+    //   console.log(response);
+    // })
+    // .catch(function(error){
+    //   console.log(error);
+    // });
     if (!Number(distance)){
       throw new BadRequestException(
         'distance must be a number...',
