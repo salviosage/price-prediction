@@ -1,51 +1,15 @@
-// {
-//     "compilerOptions": {
-//       "experimentalDecorators": true,
-//       "target": "es6" /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019' or 'ESNEXT'. */,
-//       "module": "commonjs" /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */,
-//       "allowJs": true /* Allow javascript files to be compiled. */,
-//       "checkJs": true /* Report errors in .js files. */,
-//       "outDir": "./dist" /* Redirect output structure to the directory. */,
-//       "rootDir": "./src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
-//       "strict": true /* Enable all strict type-checking options. */,
-//       "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
-  
-//       "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
-  
-//       /* Advanced Options */
-//       "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
-//       "emitDecoratorMetadata": true,
-//       "allowSyntheticDefaultImports": true,
-//       "strictPropertyInitialization": false,
-//     },
-//     "exclude": ["node_modules", "coverage", "jest.config.js", "**/*.spec.ts"]
-//   }
-
-  {
-    "compilerOptions": {
-        "module": "commonjs",
-        "esModuleInterop": true,
-              "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
-      "emitDecoratorMetadata": true,
-      "allowSyntheticDefaultImports": true,
-      "strictPropertyInitialization": false,
-        "target": "es6",
-        "experimentalDecorators": true,
-        "noImplicitAny": false,
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "outDir": "dist",
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "node_modules/*",
-                "src/types/*",
-            ]
-        }
-    },
-    "exclude": ["node_modules", "coverage", "jest.config.js", "**/*.spec.ts"],
-    "include": [
-        "src/**/*"
-    ]
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true
+  }
 }
-  
