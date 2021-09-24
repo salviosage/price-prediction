@@ -16,8 +16,8 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: false, length: 50 })
   firstName: string;
 
-
-  
+  @Column({ nullable: false,default:"Normal"})
+  role: string;
 
   @Column('boolean', { default: false })
   verified: boolean;

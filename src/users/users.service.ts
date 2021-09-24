@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+
   ConflictException,
   Injectable,
 } from '@nestjs/common';
@@ -17,16 +18,44 @@ export class UsersService {
    * @description find a user with a given username
    * @returns {Promise<UserEntity>} user if found
    */
-  public async getUserByUsername(username: string): Promise<UserEntity> {
-    return await this.userRepo.findOne({ where: { username } });
+  public async getUserByUsername(username: string,Authuser: UserEntity,): Promise<UserEntity> {
+    console.log(Authuser.role,Authuser)
+    if(Authuser.role==="Admin"){
+      return await this.userRepo.findOne({ where: { username } });
+    }
+    else{
+      throw new BadRequestException(
+        'You have no privilage to perform the action',
+      );
+    
   }
+}
+
+  /**
+   * @description find a user with a given username
+   * @returns {Promise<UserEntity>} user if found
+   */
+   public async getMe(Authuser: UserEntity,): Promise<UserEntity> {
+   
+      return await this.userRepo.findOne({ where: { username:Authuser.username } });
+    
+}
 
   /**
    * @description find a user with a given userid
    * @returns {Promise<UserEntity>} user if found
    */
-  public async getUserByUserId(userId: string): Promise<UserEntity> {
-    return await this.userRepo.findOne({ where: { id: userId } });
+  public async getUserByUserId(userId: string,Authuser: UserEntity,): Promise<UserEntity> {
+    if(Authuser.role==="Admin"){
+      return await this.userRepo.findOne({ where: { id: userId } });
+    }
+    else{
+      throw new BadRequestException(
+        'You have no privilage to perform the action',
+      );
+
+    }
+    
   }
 
   /**
@@ -52,9 +81,11 @@ export class UsersService {
         'Password must be of minimum 8 characters and should contain atleast one number and one special character',
       );
 
-    const usernameAlreadyExists = await this.getUserByUsername(user.username);
+    const usernameAlreadyExists = await this.userRepo.findOne({ where: { username:user.username } });
     if (usernameAlreadyExists)
       throw new ConflictException('This username is already taken!');
+    if (user.role && user.role != 'Admin' && user.role != 'Normal') 
+      throw new ConflictException('User role should be either Admin or Normal!');
 
     const newUser = await this.userRepo.save(user);
 
@@ -70,18 +101,57 @@ export class UsersService {
   public async updateUser(
     userId: string,
     newUserDetails: Partial<UserEntity>,
+    user: UserEntity,
   ): Promise<UserEntity> {
+    
     const existingUser = await this.userRepo.findOne({
       where: { id: userId },
     });
     if (!existingUser) {
       return null;
     }
+    if(!(user.role==="Admin"|| user.id!==existingUser.id)){
+      throw new ConflictException('you dont have privirage to update this profile!');
+    }
     if (newUserDetails.firstName)
       existingUser.firstName = newUserDetails.firstName;
+    if (newUserDetails.role ){
+      if (newUserDetails.role === 'Admin' || newUserDetails.role === 'Normal'){
+        existingUser.role = newUserDetails.role;
+      }else {
+        throw new ConflictException('User role should be either Admin or Normal!');
+      }
+        
+      
+    }
     if (newUserDetails.lastName)
       existingUser.lastName = newUserDetails.lastName;
 
     return await this.userRepo.save(existingUser);
+  }
+
+  public async verifyUser(
+    userId: string,
+    user: UserEntity,
+  ): Promise<UserEntity> {
+    
+    if(user.role==="Admin"){
+      const existingUser = await this.userRepo.findOne({
+        where: { id: userId },
+      });
+      if (!existingUser) {
+        return null;
+      }
+        existingUser. verified = !existingUser.verified;
+  
+      const newUser = await this.userRepo.save(existingUser);
+      return newUser;
+    }
+    else{
+      throw new BadRequestException(
+        'You have no privilage to perform the action',
+      );
+    }
+    
   }
 }

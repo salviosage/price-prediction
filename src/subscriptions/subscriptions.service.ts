@@ -49,7 +49,7 @@ export class SubscriptionsService {
    * @description delete subscription by id
    */
   async deleteSubscription(id: string): Promise<boolean> {
-    const deleteResult = await this.subscriptionsRepository.delete({ id });
+    const deleteResult = await this.subscriptionsRepository.delete({ id, });
     return deleteResult.affected === 1;
   }
 
@@ -65,6 +65,7 @@ export class SubscriptionsService {
         'Subscription should have a amount ,Expired date and may be description',
       );
     }
+   
 
     const newSubscription = new SubscriptionEntity();
     newSubscription.amount = subscription.amount;

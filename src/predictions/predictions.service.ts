@@ -22,21 +22,66 @@ export class PredictionsService {
   async getAllPredictions(
     client?: UserEntity,
   ): Promise<Array<PredictionEntity>> {
+    if(client.role !== 'Admin'){
+      throw new BadRequestException('You dont have privilage to perform such action')
+    }
+
     const queryBuilder = this.predictionsRepository
       .createQueryBuilder('predictions')
-      .leftJoinAndSelect('predictions.client', 'UserEntity.id');
+      .leftJoinAndSelect('predictions.client', 'client');
 
-    return queryBuilder
+   const ret = await queryBuilder
       .addSelect('predictions.created_at')
       .orderBy('predictions.created_at', 'DESC')
       .limit(100)
       .getMany();
+      return ret;
   }
-
+  async getPredictionsStats(
+    client: UserEntity,
+  ): Promise<Number> {
+    if(client.role !== "Admin"){
+      throw new BadRequestException('Unauthorised')
+    }
+    const ret = await this.predictionsRepository.count();
+      // .createQueryBuilder('predictions')
+      // .leftJoinAndSelect('predictions.client', 'client');
+      //       const ret = await queryBuilder.addSelect('predictions.created_at')
+      //       // .select('predictions.created_at')
+      //       // .groupBy('predictions.created_at')
+      //             .orderBy('predictions.created_at', 'DESC')
+      //             .limit(100)
+      //             .getMany();
+      //             console.log
+      return ret;
+  }
+  async getMyPredictions(
+    client: UserEntity,
+  ): Promise<Array<PredictionEntity>> {
+    if(client.verified === false){
+      throw new BadRequestException('You need to verify your account first')
+    }
+    const queryBuilder = this.predictionsRepository
+      .createQueryBuilder('predictions')
+      .leftJoinAndSelect('predictions.client', 'client');
+        queryBuilder.where(`predictions.client = :id`, { id:client.id });
+  
+   const ret = await queryBuilder
+      .addSelect('predictions.created_at')
+      .orderBy('predictions.created_at', 'DESC')
+      .limit(100)
+      .getMany();
+      return ret;
+  }
   /**
    * @description find prediction by id
    */
   async getPrediction(id: string,client: UserEntity): Promise<PredictionEntity> {
+    if(client.verified === false){
+      throw new BadRequestException(
+        'You are not verified to perform such action please contact admin',
+      );
+    }
     return this.predictionsRepository.findOne({id,client },{
       relations: ['cleint'],
     });
@@ -46,6 +91,11 @@ export class PredictionsService {
    * @description delete prediction by id
    */
   async deletePrediction(id: string,client: UserEntity): Promise<boolean> {
+    if(client.verified === false){
+      throw new BadRequestException(
+        'You are not verified to perform such action please contact admin',
+      );
+    }
     const deleteResult = await this.predictionsRepository.delete({ id ,client});
     return deleteResult.affected === 1;
   }
@@ -63,6 +113,11 @@ export class PredictionsService {
     price: string
 }[],entity:PredictionEntity}> {
     const{from,to,distance}=prediction;
+    if(client.verified === false){
+      throw new BadRequestException(
+        'You are not verified to perform such action please contact admin',
+      );
+    }
     if (!distance || !from || !to) {
       throw new BadRequestException(
         'Prediction request should have adistance ,arigin location and destination location',

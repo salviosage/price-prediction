@@ -49,6 +49,24 @@ export class PredictionsController {
   }
   @ApiBearerAuth()
   @UseGuards(RequiredAuthGuard)
+  @Get('/me')
+  async getMyPredictions(
+    @User() client: UserEntity,
+    @Query() query: PredictionDetailsQueryParams,
+  ): Promise<PredictionEntity[]> {
+    return await this.predictionsService.getMyPredictions(client);
+  }
+  @ApiBearerAuth()
+  @UseGuards(RequiredAuthGuard)
+  @Get('/analytics')
+  async getPredictionsStats(
+    @User() client: UserEntity,
+    @Query() query: PredictionDetailsQueryParams,
+  ): Promise<Number> {
+    return await this.predictionsService.getPredictionsStats(client);
+  }
+  @ApiBearerAuth()
+  @UseGuards(RequiredAuthGuard)
   @Get('/:predictionId')
   async getPredictionDetails(
     @User() client: UserEntity,
