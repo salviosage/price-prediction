@@ -3,15 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Console } from 'console';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { PredictionEntity } from './entities/prediction.entity';
 import { PredictionsRepository } from './predictions.repository';
 import { Depreciation as vehicles } from './utils/data';
 import priceCalculator from './utils/formula';
-var GeocoderGeonames = require('geocoder-geonames'),
-    geocoder = new GeocoderGeonames({
-      username:'salviosage',
-    });
 
 @Injectable()
 export class PredictionsService {
@@ -37,23 +34,136 @@ export class PredictionsService {
       .getMany();
       return ret;
   }
+  async getPredictionsStatsByDay(
+  ): Promise<Array<any>> {
+    const queryBuilder = await this.predictionsRepository.manager.query
+   (`SELECT
+    extract(DAY FROM P.created_at)
+         AS  day,
+       COUNT(id) AS count
+       FROM public."Prediction" P
+GROUP BY extract(DAY FROM P.created_at)`);
+      return queryBuilder;
+  }
+  async getPredictionsStatsByMonth(
+    ): Promise<Array<any>> {
+      console.log('in month')
+      const queryBuilder = await this.predictionsRepository.manager.query
+     (`SELECT
+      extract(MONTH FROM P.created_at)
+           AS  month,
+         COUNT(id) AS count
+         FROM public."Prediction" P
+  GROUP BY extract(MONTH FROM P.created_at)`);
+        return queryBuilder;
+    }
+    async getPredictionsStatsByYeear(
+      ): Promise<Array<any>> {
+        const queryBuilder = await this.predictionsRepository.manager.query
+       (`SELECT
+        extract(YEAR FROM P.created_at)
+             AS  year,
+           COUNT(id) AS count
+           FROM public."Prediction" P
+    GROUP BY extract(YEAR FROM P.created_at)`);
+          return queryBuilder;
+      }
+  async getPredictionsStatsByUser(
+  ): Promise<Array<any>> {
+  
+ 
+    const queryBuilder = await this.predictionsRepository.manager.query
+  
+
+(`SELECT
+    extract(DAY FROM P.created_at)
+         AS  month,P.client,
+       COUNT(id) AS count
+       FROM public."Prediction" P
+GROUP BY extract(DAY FROM P.created_at),P.client`);
+      return queryBuilder;
+  }
   async getPredictionsStats(
+    query:{  Period?: string;
+     byUser?: Boolean},
     client: UserEntity,
-  ): Promise<Number> {
+  ): Promise<Array<any>> {
     if(client.role !== "Admin"){
       throw new BadRequestException('Unauthorised')
     }
-    const ret = await this.predictionsRepository.count();
-      // .createQueryBuilder('predictions')
-      // .leftJoinAndSelect('predictions.client', 'client');
-      //       const ret = await queryBuilder.addSelect('predictions.created_at')
-      //       // .select('predictions.created_at')
-      //       // .groupBy('predictions.created_at')
-      //             .orderBy('predictions.created_at', 'DESC')
-      //             .limit(100)
-      //             .getMany();
-      //             console.log
-      return ret;
+    console.log(query.Period.toLocaleLowerCase())
+    if(query.Period  && query.Period.toLocaleLowerCase()=='month'){
+      console.log('it exist')
+    }
+    if(query.byUser===true){
+      console.log('by user')
+      return await this.getPredictionsStatsByUser()
+    } else if(query.Period  && query.Period.toLocaleLowerCase()== 'day'){
+      console.log('in day')
+      return await this.getPredictionsStatsByDay()}
+      else if(query.Period  && query.Period.toLocaleLowerCase()=='month'){
+        console.log('in month')
+        return await this.getPredictionsStatsByMonth()}
+        else if(query.Period  && query.Period.toLocaleLowerCase()== 'year'){
+          console.log('in year')
+          return this.getPredictionsStatsByYeear()}
+ else{
+
+    const queryBuilder = await this.predictionsRepository.manager.query
+    (`	SELECT COUNT(*) as count,P.id, extract(DAY FROM P.created_at) as date, P.updated_at, P."from", P."to", P.distance, P.client
+    FROM public."Prediction" P group by date,P.id order by date desc`);
+//    (`SELECT
+//     extract(DAY FROM P.created_at)
+//          AS  month,
+//        COUNT(id) AS count
+//        FROM public."Prediction" P
+// GROUP BY extract(DAY FROM P.created_at)`);
+
+// (`SELECT
+//     extract(DAY FROM P.created_at)
+//          AS  month,P.client,
+//        COUNT(id) AS count
+//        FROM public."Prediction" P
+// GROUP BY extract(DAY FROM P.created_at),P.client`);
+
+    // .createQueryBuilder('predictions')
+    // .leftJoinAndSelect('predictions.client', 'client')
+    // .addSelect('predictions.created_at')
+    // .groupBy("predictions.created_at")
+    //            .orderBy('predictions.created_at', 'DESC')
+    //            .limit(100)
+    //            .getRawMany();
+
+    // .addSelect("COUNT(predictions.id) AS predictions_total_count" )
+    // .leftJoinAndSelect(Jobs, "jobs", "jobs.id = jobViews.job_id")
+    // .where("jobs.user_id != :id", { id: user_id })        
+    // .groupBy("predictions.client")
+    // .orderBy('predictions_total_count', 'DESC')   
+    // .addSelect('predictions.created_at')
+    //   .orderBy('predictions.created_at', 'DESC')
+    //   .limit(100)       
+    // .getRawMany();
+    // const ret = await queryBuilder
+      
+    //   .getMany();
+    //   return ret;
+
+    // .count();
+    
+      
+      //       .select('predictions.created_at')
+      //       .addSelect('predictions.client')
+      //       .addSelect('predictions.from')
+      //       .addSelect("COUNT(predictions.photosCount)", "sum")
+      //       .addSelect('predictions.to')
+      //       .addSelect('predictions.distance')
+      //       .groupBy('predictions.created_at').limit(100)
+      //       .getRawMany();
+            // const ret = await queryBuilder
+           
+            //       console.log(ret)
+      return queryBuilder;
+ }
   }
   async getMyPredictions(
     client: UserEntity,
@@ -123,15 +233,6 @@ export class PredictionsService {
         'Prediction request should have adistance ,arigin location and destination location',
       );
     }
-    // geocoder.get(`search`,{
-    //   q: 'Berlin'
-    // })
-    // .then(function(response){
-    //   console.log(response);
-    // })
-    // .catch(function(error){
-    //   console.log(error);
-    // });
     if (!Number(distance)){
       throw new BadRequestException(
         'distance must be a number...',

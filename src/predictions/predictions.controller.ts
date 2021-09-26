@@ -33,6 +33,10 @@ class PredictionDetailsQueryParams {
   // @ApiPropertyOptional() fromDate: Date;
   // @ApiPropertyOptional() hashtags: string[];
 }
+class PredictionAnalysisQueryParams {
+  @ApiPropertyOptional() Period: string;
+  @ApiPropertyOptional() byUser: Boolean;
+}
 
 @ApiTags('predictions')
 @Controller('predictions')
@@ -61,9 +65,9 @@ export class PredictionsController {
   @Get('/analytics')
   async getPredictionsStats(
     @User() client: UserEntity,
-    @Query() query: PredictionDetailsQueryParams,
-  ): Promise<Number> {
-    return await this.predictionsService.getPredictionsStats(client);
+    @Query() query:  PredictionAnalysisQueryParams,
+  ): Promise<Array<any>>{
+    return await this.predictionsService.getPredictionsStats(query,client);
   }
   @ApiBearerAuth()
   @UseGuards(RequiredAuthGuard)
